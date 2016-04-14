@@ -33,3 +33,4 @@ C:\Users\196128636\Desktop\Web\GoodTp2MVC\TP2MVC\bin\fr\System.Web.WebPages.Depl
 C:\Users\196128636\Desktop\Web\GoodTp2MVC\TP2MVC\bin\fr\System.Web.WebPages.Razor.resources.dll
 C:\Users\196128636\Desktop\Web\GoodTp2MVC\TP2MVC\obj\Debug\TP2MVC.dll
 C:\Users\196128636\Desktop\Web\GoodTp2MVC\TP2MVC\obj\Debug\TP2MVC.pdb
+C:\Users\196128636\Desktop\Web\GoodTp2MVC\TP2MVC\obj\Debug\TP2MVC.csprojResolveAssemblyReference.cache

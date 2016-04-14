@@ -25,6 +25,7 @@
                     <li>@Html.ActionLink("À propos de", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
+                @Html.Partial("_Login")
             </div>
         </div>
     </div>
@@ -41,3 +42,45 @@
     @RenderSection("scripts", required: false)
 </body>
 </html>
+<script>
+
+    $(document).ready(function () { ResetSessionTimeOut(); });
+
+    var onMinuteCountDown = 60;
+    var timeLeft = 0;
+
+    function ResetSessionTimeOut() {
+        timeLeft = 0;
+        $("#TimeOutDisplay").text("");
+        var sessionTimeout = (parseInt(@Session.Timeout) - 1) * 60 * 1000;
+        var triggerTimeOut = (parseInt(@Session.Timeout) - 2) * 60 * 1000;
+        var sessionActive = (parseInt(@Session.Count));
+
+        if (sessionActive > 0) {
+            if (triggerTimeOut >= 1000)
+                setTimeout(TriggerCountDown, triggerTimeOut);
+            else
+                TriggerCountDown();
+            setTimeout(SessionEnd, sessionTimeout);
+        }
+    }
+
+    function TriggerCountDown() {
+        timeLeft = onMinuteCountDown;
+        setInterval(ShowTimeOutCountDown, 1000);
+    }
+
+    function ShowTimeOutCountDown() {
+        if (timeLeft > 0) {
+            $("#TimeOutDisplay").text("expiration dans " + timeLeft + " secondes");
+            timeLeft--;
+        }
+        else
+        {
+            $("#TimeOutDisplay").text("");
+        }
+    }
+    function SessionEnd() {
+        window.location = "@Url.Action("LogOff", "Account")";
+    }
+</script>
