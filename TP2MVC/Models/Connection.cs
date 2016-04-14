@@ -17,6 +17,11 @@ namespace TP2MVC.Models
 
     public class Connections : SqlExpressWrapper<Connection>
     {
+        public Connections(Object connectionString)
+            : base(connectionString)
+        {
+            SetCache(true, "SELECT * FROM Connection ORDER BY UserId");
+        }
         public List<Object> GetJsonConnectionList()
         {
             List<Object> json_ThreadList = new List<Object>();
