@@ -15,6 +15,12 @@ namespace TP2MVC.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
+        public String GetUserName()
+        {
+            Users users = (Users)HttpRuntime.Cache["Users"];
+            return users.GetUserName(Id);
+        }
+
     }
 
     public class Connections : SqlExpressWrapper<Connection>
@@ -24,6 +30,7 @@ namespace TP2MVC.Models
         {
             SetCache(true, "SELECT * FROM Connection ORDER BY UserId");
         }
+
         public List<Object> GetJsonConnectionList()
         {
             List<Object> json_ThreadList = new List<Object>();
