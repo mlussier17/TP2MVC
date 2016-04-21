@@ -79,7 +79,8 @@ namespace TP2MVC.Controllers
                     List<Connection> ConList = new List<Connection>();
 
                     foreach(Connection connection in con.ToList())
-                        if (connection.UserId == user.Id) ConList.Add(connection);
+                        if (connection.UserId == user.Id) 
+                            ConList.Add(connection);
 
                     return View(ConList);
                 }
@@ -176,7 +177,9 @@ namespace TP2MVC.Controllers
                     ModelState.AddModelError("Password", "Mot de passe incorrect.");
                 else
                 {
+                    Connections con = (Connections)HttpRuntime.Cache["Connections"];
                     AddOnLineUser(foundUser);
+                    con.Add(con);
                     return RedirectToAction("Index", "Home");
                 }
             }
