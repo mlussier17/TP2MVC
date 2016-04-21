@@ -22,6 +22,7 @@ namespace TP2MVC
             String MainDB = @"Data Source=(LocalDB)\v11.0;AttachDbFilename='" + DB_Path + "'; Integrated Security=true;Max Pool Size=1024;Pooling=true;";
 
             HttpRuntime.Cache["Users"] = new Users(MainDB);
+            HttpRuntime.Cache["Connections"] = new Connections(MainDB);    
         }
         protected void Session_End()
         {

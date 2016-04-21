@@ -1,0 +1,36 @@
+﻿@model IEnumerable<TP2MVC.Models.Connection>
+
+<table class="table">
+    <tr>
+        <th>
+            Usager
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            Heure
+        </th>
+        <th>
+            Durée
+        </th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.Display(item.GetUserName())
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StartDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EndDate)
+        </td>
+        <td>
+
+        </td>
+    </tr>
+}
+
+</table>

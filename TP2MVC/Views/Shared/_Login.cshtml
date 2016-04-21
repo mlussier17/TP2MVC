@@ -8,7 +8,7 @@
         <ul class="nav navbar-nav navbar-right">
             <li> <a href="" id="TimeOutDisplay" style="color:yellow;"></a></li>
             <li>
-                @Html.ActionLink("Bonjour " + user.Firstname + " " + user.Lastname + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Administrer" })
+                @Html.ActionLink("Bonjour " + user.Firstname + " " + user.Lastname + "!", "Manage", "User", routeValues: null, htmlAttributes: new { title = "Administrer" })
             </li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()">Se déconnecter</a></li>
         </ul>
@@ -17,7 +17,7 @@
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li>@Html.ActionLink("S’inscrire", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
-        <li>@Html.ActionLink("Se connecter", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        <li>@Html.ActionLink("S’inscrire", "Register", "User", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Se connecter", "Login", "User", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
     </ul>
 }

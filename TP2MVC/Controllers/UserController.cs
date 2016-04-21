@@ -57,6 +57,81 @@ namespace TP2MVC.Controllers
             }
             return View();
         }
+
+        public ActionResult Sessions()
+        {
+            User user = (User)Session["User"];
+
+            // TEST
+            user = new User();
+            user.IsAdmin = 1;
+
+            if (user != null)
+            {
+                Connections con = (Connections)HttpRuntime.Cache["Connections"];
+
+                if (user.IsAdmin == 1)
+                {
+                    return View(con.ToList());
+                }
+                else
+                {
+                    List<Connection> ConList = new List<Connection>();
+
+                    foreach(Connection connection in con.ToList())
+                        if (connection.UserId == user.Id) ConList.Add(connection);
+
+                    return View(ConList);
+                }
+            }
+            else RedirectToAction("Index", "Home");
+
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult ConnectionsJson()
+        {
+            ActionExecutingContext filterContext = new ActionExecutingContext();
+            User user = (User)Session["User"];
+
+            if (user != null)
+            {
+                Connections con = (Connections)HttpRuntime.Cache["Connections"];
+                if (user.IsAdmin == 1)
+                {
+                    filterContext.Result = new JsonResult
+                    {
+                        Data = con.GetJsonConnectionList(),
+                        ContentEncoding = System.Text.Encoding.UTF8,
+                        ContentType = "application/json",
+                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                    };
+                }
+                else
+                {
+                    filterContext.Result = new JsonResult
+                    {
+                        Data = con.GetJsonConnectionList(user.Id),
+                        ContentEncoding = System.Text.Encoding.UTF8,
+                        ContentType = "application/json",
+                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                    };
+                }
+            }
+            else
+            {
+                filterContext.Result = new JsonResult
+                    {
+                        Data = new { Success = false, Data = "Unauthorized" },
+                        ContentEncoding = System.Text.Encoding.UTF8,
+                        ContentType = "application/json",
+                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                    };
+            }
+            return filterContext.Result;
+        }
+
         public ActionResult Manage()
         {
             return View();
