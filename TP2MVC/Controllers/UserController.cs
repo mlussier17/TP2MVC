@@ -91,8 +91,12 @@ namespace TP2MVC.Controllers
         }
 
         [HttpGet]
-        public ActionResult ConnectionsJson(int id = 0)
+        public ActionResult ConnectionsJson(int id = 0, int jour = 1, DateTime? date = null)
         {
+            DateTime Date;
+            if (!date.HasValue) Date = DateTime.Now;
+            else Date = (DateTime)date;
+
             ActionExecutingContext filterContext = new ActionExecutingContext();
             User user = (User)Session["User"];
 
@@ -106,7 +110,7 @@ namespace TP2MVC.Controllers
 
                     filterContext.Result = new JsonResult
                     {
-                        Data = con.GetJsonConnectionList(userid),
+                        Data = con.GetJsonConnectionList(userid, jour, Date),
                         ContentEncoding = System.Text.Encoding.UTF8,
                         ContentType = "application/json",
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet
@@ -116,7 +120,7 @@ namespace TP2MVC.Controllers
                 {
                     filterContext.Result = new JsonResult
                     {
-                        Data = con.GetJsonConnectionList(user.Id),
+                        Data = con.GetJsonConnectionList(user.Id, jour, Date),
                         ContentEncoding = System.Text.Encoding.UTF8,
                         ContentType = "application/json",
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet

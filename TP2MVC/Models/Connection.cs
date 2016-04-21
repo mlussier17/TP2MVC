@@ -33,7 +33,9 @@ namespace TP2MVC.Models
 
         public List<LoginDate> GetJsonConnectionList(int userID, int nbDays = 1, DateTime? date = null)
         {
-            if (date.HasValue) date = DateTime.Now;
+            DateTime Date;
+            if (!date.HasValue) Date = DateTime.Now;
+            else Date = (DateTime)date;
 
             List<LoginDate> json_DateList = new List<LoginDate>();
             Dictionary<DateTime, int> dic = new Dictionary<DateTime, int>(); 
@@ -41,7 +43,8 @@ namespace TP2MVC.Models
 
             foreach (Connection con in ToList())
             {
-                if (con.UserId == userID)
+                int days = (int)(Date.Date - con.StartDate.Date).TotalDays;
+                if (con.UserId == userID && nbDays > days && days >= 0)
                 {
                     int currentCount;
                     if (dic.TryGetValue(con.StartDate.Date, out currentCount))
