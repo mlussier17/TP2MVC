@@ -41,7 +41,7 @@
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Sql_Express_Utilities">
-      <HintPath>..\..\..\..\Downloads\Authentification de base\Authentification de base\SEU DLL\Sql_Express_Utilities.dll</HintPath>
+      <HintPath>..\TP2MVC\DLL\Sql_Express_Utilities.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
