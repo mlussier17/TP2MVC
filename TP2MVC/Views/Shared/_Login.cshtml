@@ -1,7 +1,7 @@
 ﻿@if (Session["user"] != null)
 {
     TP2MVC.Models.User user = (TP2MVC.Models.User)Session["user"];
-    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    using (Html.BeginForm("LogOff", "User", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
         @Html.AntiForgeryToken()
 
