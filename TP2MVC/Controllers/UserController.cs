@@ -68,10 +68,6 @@ namespace TP2MVC.Controllers
         {
             User user = (User)Session["User"];
 
-            // TEST
-            user = new User();
-            user.IsAdmin = 1;
-
             if (user != null)
             {
                 Connections con = (Connections)HttpRuntime.Cache["Connections"];
@@ -83,6 +79,7 @@ namespace TP2MVC.Controllers
                 else
                 {
                     List<Connection> ConList = new List<Connection>();
+                    //con.ToList().Sort((con1,con2) => (con2.EndDate.CompareTo(con1.EndDate))); //Maybe? 
 
                     foreach(Connection connection in con.ToList())
                         if (connection.UserId == user.Id) ConList.Add(connection);

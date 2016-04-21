@@ -18,7 +18,7 @@ namespace TP2MVC.Models
         public String GetUserName()
         {
             Users users = (Users)HttpRuntime.Cache["Users"];
-            return users.GetUserName(Id);
+            return users.GetUserName(UserId);
         }
 
     }
@@ -28,7 +28,7 @@ namespace TP2MVC.Models
         public Connections(Object connectionString)
             : base(connectionString)
         {
-            SetCache(true, "SELECT * FROM Connection ORDER BY UserId");
+            SetCache(true, "SELECT * FROM Connections ORDER BY UserId ASC");
         }
 
         public List<Object> GetJsonConnectionList()

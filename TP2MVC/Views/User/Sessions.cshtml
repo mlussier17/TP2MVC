@@ -19,7 +19,7 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.Display(item.GetUserName())
+            @item.GetUserName()
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.StartDate)
