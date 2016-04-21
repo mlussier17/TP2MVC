@@ -17,18 +17,19 @@
     </tr>
 
 @foreach (var item in Model) {
+    TimeSpan time = (item.EndDate - item.StartDate);
     <tr>
         <td>
             @item.GetUserName()
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.StartDate)
+            @item.StartDate.Date.ToShortDateString()
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.EndDate)
+            @item.StartDate.TimeOfDay.ToString()
         </td>
         <td>
-
+            @time.ToString(@"hh\:mm\:ss")
         </td>
     </tr>
 }

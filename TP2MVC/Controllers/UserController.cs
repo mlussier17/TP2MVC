@@ -87,13 +87,11 @@ namespace TP2MVC.Controllers
                     return View(ConList);
                 }
             }
-            else RedirectToAction("Index", "Home");
-
-            return View();
+            else return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
-        public ActionResult ConnectionsJson()
+        public ActionResult ConnectionsJson(int id = 0)
         {
             ActionExecutingContext filterContext = new ActionExecutingContext();
             User user = (User)Session["User"];
@@ -103,9 +101,12 @@ namespace TP2MVC.Controllers
                 Connections con = (Connections)HttpRuntime.Cache["Connections"];
                 if (user.IsAdmin == 1)
                 {
+                    int userid = user.Id;
+                    if (id != 0) userid = id;
+
                     filterContext.Result = new JsonResult
                     {
-                        Data = con.GetJsonConnectionList(),
+                        Data = con.GetJsonConnectionList(userid),
                         ContentEncoding = System.Text.Encoding.UTF8,
                         ContentType = "application/json",
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet
@@ -194,14 +195,17 @@ namespace TP2MVC.Controllers
 
         public ActionResult LogOff()
         {
-            Connections cons = (Connections)HttpRuntime.Cache["Connections"];
-            Connection con = (Connection)Session["connection"];
-            con.EndDate = DateTime.Now;
-            cons.Add(con);
+            if ((User)Session["User"] != null)
+            {
+                Connections cons = (Connections)HttpRuntime.Cache["Connections"];
+                Connection con = (Connection)Session["connection"];
+                con.EndDate = DateTime.Now;
+                cons.Add(con);
 
-            RemoveOnLineUser();
-            Session.Clear();
-            Session.Abandon();
+                RemoveOnLineUser();
+                Session.Clear();
+                Session.Abandon();
+            }
             return RedirectToAction("Index", "Home");
         }
 	}
