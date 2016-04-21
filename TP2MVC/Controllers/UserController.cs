@@ -51,8 +51,14 @@ namespace TP2MVC.Controllers
                 {
                     User newUser = new User(userViewModel);
                     users.Add(newUser);
-                    AddOnLineUser(newUser);
-                    return RedirectToAction("Index", "Home");
+
+                    UserViewModel usv = new UserViewModel();
+                    usv.Password = newUser.Password;
+                    usv.ConfirmPassword = newUser.Password;
+                    usv.Username = newUser.Username;
+                    Login(usv);
+
+                    return RedirectToAction("Index", "Home"); // Atteindra jamais
                 }
             }
             return View();
@@ -177,6 +183,12 @@ namespace TP2MVC.Controllers
                 else
                 {
                     AddOnLineUser(foundUser);
+
+                    Connection con = new Connection();
+                    con.StartDate = DateTime.Now;
+                    con.UserId = foundUser.Id;
+                    Session["connection"] = con;
+
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -185,6 +197,11 @@ namespace TP2MVC.Controllers
 
         public ActionResult LogOff()
         {
+            Connections cons = (Connections)HttpRuntime.Cache["Connections"];
+            Connection con = (Connection)Session["connection"];
+            con.EndDate = DateTime.Now;
+            cons.Add(con);
+
             RemoveOnLineUser();
             Session.Clear();
             Session.Abandon();
