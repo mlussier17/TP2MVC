@@ -90,6 +90,12 @@ namespace TP2MVC.Controllers
             else return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult Stats(int nbjours = 7)
+        {
+            ViewData["nbjours"] = nbjours;
+            return View();
+        }
+
         [HttpGet]
         public ActionResult ConnectionsJson(int id = 0, int jour = 1, DateTime? date = null)
         {
