@@ -90,6 +90,28 @@ namespace TP2MVC.Controllers
             else return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult OnlineUsersJson()
+        {
+            ActionExecutingContext filterContext = new ActionExecutingContext();
+            List<LogedInUser> LogedInUsers = new List<LogedInUser>();
+
+            if (HttpRuntime.Cache["OnLineUsers"] != null)
+            {
+                foreach (User user in ((List<User>)HttpRuntime.Cache["OnLineUsers"]))
+                    LogedInUsers.Add(new LogedInUser(user.Username, user.Lastname, user.Firstname, user.GetLoginTime()));
+            }
+
+            filterContext.Result = new JsonResult
+            {
+                Data = LogedInUsers,
+                ContentEncoding = System.Text.Encoding.UTF8,
+                ContentType = "application/json",
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+
+            return filterContext.Result;
+        }
+
         public ActionResult Stats(int nbjours = 7)
         {
             ViewData["nbjours"] = nbjours;
