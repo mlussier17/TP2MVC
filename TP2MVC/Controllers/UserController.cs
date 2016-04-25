@@ -90,6 +90,11 @@ namespace TP2MVC.Controllers
             else return RedirectToAction("Index", "Home");
         }
 
+        public ActionResult OnlineUsers()
+        {
+            return View();
+        }
+
         public ActionResult OnlineUsersJson()
         {
             ActionExecutingContext filterContext = new ActionExecutingContext();

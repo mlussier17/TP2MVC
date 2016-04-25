@@ -182,6 +182,7 @@
     <Content Include="Views\User\Manage.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\User\Stats.cshtml" />
+    <Content Include="Views\User\OnlineUsers.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
