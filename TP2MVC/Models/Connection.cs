@@ -18,7 +18,7 @@ namespace TP2MVC.Models
         public String GetUserName()
         {
             Users users = (Users)HttpRuntime.Cache["Users"];
-            return users.GetUserName(Id);
+            return users.GetUserName(UserId);
         }
 
     }
@@ -28,50 +28,42 @@ namespace TP2MVC.Models
         public Connections(Object connectionString)
             : base(connectionString)
         {
-            SetCache(true, "SELECT * FROM Connection ORDER BY UserId");
+            SetCache(true, "SELECT * FROM Connections ORDER BY UserId ASC, StartDate DESC");
         }
 
-        public List<Object> GetJsonConnectionList()
+        public List<LoginDate> GetJsonConnectionList(int userID, int nbDays = 1, DateTime? date = null)
         {
-            List<Object> json_ThreadList = new List<Object>();
+            DateTime Date;
+            if (!date.HasValue) Date = DateTime.Now;
+            else Date = (DateTime)date;
+
+            List<LoginDate> json_DateList = new List<LoginDate>();
+            Dictionary<DateTime, int> dic = new Dictionary<DateTime, int>(); 
+
 
             foreach (Connection con in ToList())
             {
-                json_ThreadList.Add(
-                    new
-                    {
-                        Id = con.Id,
-                        UserId = con.UserId,
-                        StartDate = con.StartDate,
-                        EndDate = con.EndDate
-                    });
-            }
-
-            return json_ThreadList;
-        }
-
-        public List<Object> GetJsonConnectionList(int userID)
-        {
-            List<Object> json_ThreadList = new List<Object>();
-
-            foreach (Connection con in ToList())
-            {
-                if (con.UserId == userID)
+                int days = (int)(Date.Date - con.StartDate.Date).TotalDays;
+                if (con.UserId == userID && nbDays > days && days >= 0)
                 {
-                    
-                    json_ThreadList.Add(
-                        new
-                        {
-                            Id = con.Id,
-                            UserId = con.UserId,
-                            StartDate = con.StartDate,
-                            EndDate = con.EndDate
-                        });
+                    int currentCount;
+                    if (dic.TryGetValue(con.StartDate.Date, out currentCount))
+                    {
+                        dic[con.StartDate.Date] = currentCount + 1;
+                    }
+                    else
+                    {
+                        dic[con.StartDate.Date] = 1;
+                    }
                 }
             }
 
-            return json_ThreadList;
-        }
+            foreach (DateTime key in dic.Keys)
+            {
+                json_DateList.Add(new LoginDate(userID, key, dic[key]));
+            }
 
+            return json_DateList;
+        }
     }
 }

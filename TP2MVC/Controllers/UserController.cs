@@ -68,10 +68,6 @@ namespace TP2MVC.Controllers
         {
             User user = (User)Session["User"];
 
-            // TEST
-            user = new User();
-            user.IsAdmin = 1;
-
             if (user != null)
             {
                 Connections con = (Connections)HttpRuntime.Cache["Connections"];
@@ -83,6 +79,7 @@ namespace TP2MVC.Controllers
                 else
                 {
                     List<Connection> ConList = new List<Connection>();
+                    //con.ToList().Sort((con1,con2) => (con2.EndDate.CompareTo(con1.EndDate))); //Maybe? 
 
                     foreach(Connection connection in con.ToList())
                         if (connection.UserId == user.Id) ConList.Add(connection);
@@ -90,14 +87,49 @@ namespace TP2MVC.Controllers
                     return View(ConList);
                 }
             }
-            else RedirectToAction("Index", "Home");
+            else return RedirectToAction("Index", "Home");
+        }
 
+        public ActionResult OnlineUsers()
+        {
+            return View();
+        }
+
+        public ActionResult OnlineUsersJson()
+        {
+            ActionExecutingContext filterContext = new ActionExecutingContext();
+            List<LogedInUser> LogedInUsers = new List<LogedInUser>();
+
+            if (HttpRuntime.Cache["OnLineUsers"] != null)
+            {
+                foreach (User user in ((List<User>)HttpRuntime.Cache["OnLineUsers"]))
+                    LogedInUsers.Add(new LogedInUser(user.Username, user.Lastname, user.Firstname, user.GetLoginTime()));
+            }
+
+            filterContext.Result = new JsonResult
+            {
+                Data = LogedInUsers,
+                ContentEncoding = System.Text.Encoding.UTF8,
+                ContentType = "application/json",
+                JsonRequestBehavior = JsonRequestBehavior.AllowGet
+            };
+
+            return filterContext.Result;
+        }
+
+        public ActionResult Stats(int nbjours = 7)
+        {
+            ViewData["nbjours"] = nbjours;
             return View();
         }
 
         [HttpGet]
-        public ActionResult ConnectionsJson()
+        public ActionResult ConnectionsJson(int id = 0, int jour = 1, DateTime? date = null)
         {
+            DateTime Date;
+            if (!date.HasValue) Date = DateTime.Now;
+            else Date = (DateTime)date;
+
             ActionExecutingContext filterContext = new ActionExecutingContext();
             User user = (User)Session["User"];
 
@@ -106,9 +138,12 @@ namespace TP2MVC.Controllers
                 Connections con = (Connections)HttpRuntime.Cache["Connections"];
                 if (user.IsAdmin == 1)
                 {
+                    int userid = user.Id;
+                    if (id != 0) userid = id;
+
                     filterContext.Result = new JsonResult
                     {
-                        Data = con.GetJsonConnectionList(),
+                        Data = con.GetJsonConnectionList(userid, jour, Date),
                         ContentEncoding = System.Text.Encoding.UTF8,
                         ContentType = "application/json",
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet
@@ -118,7 +153,7 @@ namespace TP2MVC.Controllers
                 {
                     filterContext.Result = new JsonResult
                     {
-                        Data = con.GetJsonConnectionList(user.Id),
+                        Data = con.GetJsonConnectionList(user.Id, jour, Date),
                         ContentEncoding = System.Text.Encoding.UTF8,
                         ContentType = "application/json",
                         JsonRequestBehavior = JsonRequestBehavior.AllowGet
@@ -197,14 +232,17 @@ namespace TP2MVC.Controllers
 
         public ActionResult LogOff()
         {
-            Connections cons = (Connections)HttpRuntime.Cache["Connections"];
-            Connection con = (Connection)Session["connection"];
-            con.EndDate = DateTime.Now;
-            cons.Add(con);
+            if ((User)Session["User"] != null)
+            {
+                Connections cons = (Connections)HttpRuntime.Cache["Connections"];
+                Connection con = (Connection)Session["connection"];
+                con.EndDate = DateTime.Now;
+                cons.Add(con);
 
-            RemoveOnLineUser();
-            Session.Clear();
-            Session.Abandon();
+                RemoveOnLineUser();
+                Session.Clear();
+                Session.Abandon();
+            }
             return RedirectToAction("Index", "Home");
         }
 	}

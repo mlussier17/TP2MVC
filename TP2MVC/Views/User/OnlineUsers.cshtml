@@ -1,0 +1,104 @@
+﻿
+@{
+    ViewBag.Title = "Usagées en ligne";
+}
+
+<h2>Usagées en ligne</h2>
+
+<div id="table-users">
+    @*<tr>
+        <th>
+            Nom d'usagée
+        </th>
+        <th>
+            Prénom / Nom
+        </th>
+        <th>
+            Heure de connexion
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        TimeSpan time = (item.EndDate - item.StartDate);
+        <tr>
+            <td>
+                @item.GetUserName()
+            </td>
+            <td>
+                @item.StartDate.Date.ToShortDateString()
+            </td>
+            <td>
+                @item.StartDate.TimeOfDay.ToString()
+            </td>
+            <td>
+                @time.ToString(@"hh\:mm\:ss")
+            </td>
+        </tr>
+    }*@
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () { GetOnlineUsers(); })
+
+        window.setInterval(function () {
+            reset();
+        }, 5000);
+
+        function reset()
+        {
+            var body = document.getElementById("table-users");
+            body.innerHTML = "";
+            GetOnlineUsers();
+        }
+
+        function GetOnlineUsers() {
+            $.getJSON("/User/OnlineUsersJson", InsertOnlineUsers);
+        }
+
+        function InsertOnlineUsers(data) {
+            var body = document.getElementById("table-users"),
+            tbl = document.createElement('table');
+            tbl.className = "table";
+
+            var tableBody = document.createElement('TBODY');
+            tbl.appendChild(tableBody);
+
+            // Table Header 
+            var tr = tbl.insertRow();
+
+            th = document.createElement('th');
+            th.innerHTML = "Nom d'usagée";
+            tr.appendChild(th);
+            th2 = document.createElement('th');
+            th2.innerHTML = "Prénom / Nom";
+            tr.appendChild(th2);
+            th3 = document.createElement('th');
+            th3.innerHTML = "Heure de connexion";
+            tr.appendChild(th3);
+
+            // Data
+            for (var i = 0; i < data.length; i++) {
+                var tr = tbl.insertRow();
+
+                var td = tr.insertCell();
+                td.appendChild(document.createTextNode(data[i].Username));
+
+                var td2 = tr.insertCell();
+                td2.appendChild(document.createTextNode(data[i].FirstName + " " + data[i].LastName));
+
+                var substring = data[i].LoginDate.replace("/Date(", "");
+                substring = substring.replace(")/", "");
+                substring = Math.floor(substring / 1000);
+                var tmpdate = new Date(substring * 1000);
+                var datelbl = tmpdate.toLocaleString();
+                var td3 = tr.insertCell();
+                td3.appendChild(document.createTextNode(datelbl));
+            }
+
+            body.appendChild(tbl);
+        }
+
+    </script>
+}

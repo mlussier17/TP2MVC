@@ -121,6 +121,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Connection.cs" />
+    <Compile Include="Models\LoginDate.cs" />
     <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -180,6 +181,8 @@
     <Content Include="Views\User\Register.cshtml" />
     <Content Include="Views\User\Manage.cshtml" />
     <Content Include="Views\User\Login.cshtml" />
+    <Content Include="Views\User\Stats.cshtml" />
+    <Content Include="Views\User\OnlineUsers.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

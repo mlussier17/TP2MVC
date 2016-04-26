@@ -10,6 +10,8 @@
             <li>
                 @Html.ActionLink("Bonjour " + user.Firstname + " " + user.Lastname + "!", "Manage", "User", routeValues: null, htmlAttributes: new { title = "Administrer" })
             </li>
+            <li>@Html.ActionLink("Sessions", "Sessions", "User")</li>
+            <li>@Html.ActionLink("Statistiques", "Stats", "User")</li>
             <li><a href="javascript:document.getElementById('logoutForm').submit()">Se déconnecter</a></li>
         </ul>
     }

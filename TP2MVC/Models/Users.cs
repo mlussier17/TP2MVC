@@ -6,6 +6,24 @@ using System.Web;
 
 namespace TP2MVC.Models
 {
+    public class LogedInUser
+    {
+        public String Username { get; set; }
+        public String LastName { get; set; }
+        public String FirstName { get; set; }
+        public DateTime LoginDate { get; set; }
+
+        public LogedInUser() { }
+
+        public LogedInUser(String username, String lastName, String firstName, DateTime loginDate)
+        {
+            Username = username;
+            LastName = lastName;
+            FirstName = firstName;
+            LoginDate = loginDate;
+        }
+    }
+
     public class UserViewModel
     {
         public int Id { get; set; }
@@ -67,7 +85,12 @@ namespace TP2MVC.Models
         public String Password { get; set; }
         public int IsAdmin { get; set; }
 
-        public User() { }
+        private DateTime creationTime;
+
+        public User() 
+        {
+            creationTime = DateTime.Now;
+        }
         public User(UserViewModel userViewModel)
         {
             Id = userViewModel.Id;
@@ -76,7 +99,14 @@ namespace TP2MVC.Models
             Lastname = userViewModel.Lastname;
             Password = userViewModel.Password;
             IsAdmin = 0;
+            creationTime = DateTime.Now;
         }
+
+        public DateTime GetLoginTime()
+        {
+            return creationTime;
+        }
+
     }
     public class Users : Sql_Express_Utilities.SqlExpressWrapper<User>
     {

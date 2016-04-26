@@ -1,0 +1,249 @@
+﻿
+@{
+    ViewBag.Title = "Stats";
+}
+
+<h2>Fréquences</h2>
+<div id="frequenciesData">
+
+</div>
+<canvas id="graph" width="1150" height="700" style="border:1px solid black"></canvas>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () { GetFrequencies(); })
+
+        var dataLength = @Html.Raw(Json.Encode(ViewData["nbjours"]));
+        var date = new Date(); //@Html.Raw(Json.Encode(DateTime.Now.ToString("yyyy-MM-dd")));
+
+        function GetFrequencies() {
+            $.getJSON("/User/ConnectionsJson", { jour: dataLength, date: date.toDateString()}, ShowFrequencies);
+        }
+
+        var data = null;
+
+        function ShowFrequencies(frequenciesData) {
+            Draw(frequenciesData);
+        }
+
+        var origin = { x: 0, y: 0 };
+        var dataSpanSize = { width: 0, height: 0 };
+        var canvasSize = { width: 0, height: 0 };
+        var margin = 50;
+        var ticksLength = 10;
+        var arrowSize = { width: 10, height: 10 };
+
+        function AnalyseDataSpan(data) {
+            if (dataLength > 0) {
+                var max = data[0].nbLogon;
+                for (var i = 1; i < data.length; i++) {
+                    if (max < data[i].nbLogon) { max = data[i].nbLogon; }
+                }
+                dataSpanSize.width = dataLength * 1.05;
+                dataSpanSize.height = max * 1.05; // 5% de plus
+            }
+        }
+
+        function PointToScreen(point) {
+            var screenPoint = { x: 0, y: 0 };
+            screenPoint.x = origin.x + point.x * (canvasSize.width / dataSpanSize.width);
+            screenPoint.y = origin.y - point.y * (canvasSize.height / dataSpanSize.height);
+            return screenPoint;
+        }
+
+        function DrawLine(DC, p1, p2, color) {
+            DC.beginPath();
+            DC.moveTo(p1.x, p1.y);
+            DC.lineTo(p2.x, p2.y);
+            DC.strokeStyle = color;
+            DC.stroke();
+        }
+
+        function FillPolygone(DC, points, color) {
+            DC.beginPath();
+            DC.fillStyle = color;
+            DC.strokeStyle = color;
+            DC.moveTo(points[0].x, points[0].y);
+            for (var i = 1; i < points.length; i++) {
+                DC.lineTo(points[i].x, points[i].y);
+            }
+            DC.lineTo(points[0].x, points[0].y);
+            DC.closePath;
+            DC.fill();
+            DC.stroke();
+        }
+
+        function DrawArrow(DC, center, horizontal) {
+            var points = [];
+            var point1 = { x: 0, y: 0 };
+            var point2 = { x: 0, y: 0 };
+            var point3 = { x: 0, y: 0 };
+
+            if (horizontal) {
+                point1.x = center.x;
+                point1.y = center.y - arrowSize.height / 2;
+
+                point2.x = center.x + arrowSize.width;
+                point2.y = center.y;
+
+                point3.x = center.x;
+                point3.y = center.y + arrowSize.height / 2;
+            }
+            else {
+                point1.x = center.x - arrowSize.height / 2;
+                point1.y = center.y;
+
+                point2.x = center.x;
+                point2.y = center.y - arrowSize.width;
+
+                point3.x = center.x + arrowSize.height / 2;
+                point3.y = center.y;
+            }
+            points.push(point1);
+            points.push(point2);
+            points.push(point3);
+            FillPolygone(DC, points, '#000');
+        }
+
+        function FillRectangle(DC, p1, p2, color) {
+            var point = { x: Math.min(p1.x, p2.x), y: Math.min(p1.y, p2.y) }
+            var size = { width: Math.abs(p1.x - p2.x), height: Math.abs(p1.y - p2.y) };
+            DC.fillStyle = color;
+            DC.fillRect(point.x, point.y, size.width, size.height);
+        }
+
+        function DrawAxe(DC, dataSpan, dataIncrement, horizontal, labels) {
+            var point1 = { x: 0, y: 0 };
+            var point2 = { x: 0, y: 0 };
+            var indexLabel = 0;
+            if (horizontal) {
+
+                point1 = PointToScreen({ x: 0, y: 0 });
+                point2 = PointToScreen({ x: dataSpan, y: 0 });
+                DrawLine(DC, point1, point2, '#000');
+                DrawArrow(DC, point2, horizontal);
+
+                for (var x = 0; x < dataSpan; x += dataIncrement) {
+                    point1 = PointToScreen({ x: x, y: 0 });
+                    point2 = { x: point1.x, y: point1.y + ticksLength };
+                    DrawLine(DC, point1, point2, '#000');
+                    DrawText(DC, labels[indexLabel], point2, horizontal, "12px Impact", "#000");
+                    indexLabel++;
+                }
+            }
+            else {
+                point1 = PointToScreen({ x: 0, y: 0 });
+                point2 = PointToScreen({ x: 0, y: dataSpan });
+                DrawLine(DC, point1, point2, '#000');
+                DrawArrow(DC, point2, horizontal);
+
+                for (var y = 0; y < dataSpan; y += dataIncrement) {
+                    point1 = PointToScreen({ x: 0, y: y });
+                    point2 = { x: point1.x - ticksLength, y: point1.y };
+                    DrawLine(DC, point1, point2, '#000');
+                    DrawText(DC, labels[indexLabel], point2, false, "12px Impact", "#000");
+                    indexLabel++;
+                }
+            }
+        }
+
+        function MakeNumericLabels(start, end, increment) {
+            var labels = [];
+            for (var i = start; i < end; i += increment) {
+                var label = "";
+                label += i;
+                labels.push(label);
+            }
+            return labels;
+        }
+
+        function addDays(date, days) {
+            var result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        function MakeDateLabels(startDate, endDate, dayIncrement) {
+            var labels = [];
+
+            while (startDate < endDate) {
+                var label = startDate.toLocaleDateString();
+                labels.push(label);
+                startDate = addDays(startDate, dayIncrement);
+            }
+            startDate = addDays(startDate, dayIncrement);
+            labels.push(label);
+            return labels;
+        }
+
+        function DrawText(DC, text, point, horizontal, font, color) {
+            DC.fillStyle = color;
+            DC.font = font;
+            if (horizontal)
+                DC.fillText(text, point.x - DC.measureText(text).width / 2, point.y + ticksLength * 2);
+            else
+                DC.fillText(text, point.x - DC.measureText(text).width - ticksLength, point.y + 3);
+            var metrics = DC.measureText(text);
+        }
+
+        function GetColumnValue(data, date)
+        {
+            for (var i = 0; i < data.length; i++){
+                var substring = data[i].Date.replace("/Date(", "");
+                substring = substring.replace("000)/", "");
+                var tmpdate = new Date(substring * 1000);
+
+                if (date.toDateString() == tmpdate.toDateString()) return data[i].nbLogon;
+            }
+            return 0;
+        }
+
+        function DrawChart(DC, data, end) {
+            for (var i = 0; i < dataLength; i++) {
+                var tmpdays = addDays(end, i);
+
+                var tmpvalue = GetColumnValue(data, tmpdays);
+
+                var p1 = PointToScreen({ x: (i + 1 - 0.45), y: 0 });
+                var p2 = PointToScreen({ x: (i + 1 + 0.45), y: tmpvalue });
+                FillRectangle(DC, p1, p2, '#666');
+            }
+        }
+
+        function Draw(data) {
+            var graph = document.getElementById("graph");
+
+            if (data.Success != false)
+            {
+                AnalyseDataSpan(data);
+                var DC = graph.getContext("2d");
+                canvasSize.width = graph.width - 2 * margin;
+                canvasSize.height = graph.height - 2 * margin;
+                origin.x = margin;
+                origin.y = canvasSize.height + margin;
+
+                var start = addDays(date, -dataLength + 1);
+                var end = date;
+
+                DrawText(DC, "Tableau de fréquences", { x: 600, y: 20 }, true, "18px Impact", "#333");
+                DrawChart(DC, data, start);
+
+                var horizontalLabels = MakeDateLabels(start, end, 2);
+
+                DrawAxe(DC, dataSpanSize.width, 2, true, horizontalLabels);
+
+                var verticalLabels = MakeNumericLabels(0, dataSpanSize.height, 5);
+
+                DrawAxe(DC, dataSpanSize.height, 5, false, verticalLabels);
+            }
+            else {
+                var DC = graph.getContext("2d");
+                DrawText(DC, "Vous n'avez pas l'autorisation d'avoir ses données", { x: 600, y: 20 }, true, "18px Impact", "#333");
+            }
+        }
+    </script>
+}
+
+
+
+
