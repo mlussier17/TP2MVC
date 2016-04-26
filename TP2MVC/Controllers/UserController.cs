@@ -119,6 +119,7 @@ namespace TP2MVC.Controllers
 
         public ActionResult Stats(int nbjours = 7)
         {
+            if (nbjours > 30 || nbjours < 1) nbjours = 7;
             ViewData["nbjours"] = nbjours;
             return View();
         }
@@ -126,6 +127,7 @@ namespace TP2MVC.Controllers
         [HttpGet]
         public ActionResult ConnectionsJson(int id = 0, int jour = 1, DateTime? date = null)
         {
+            if (jour > 30 || jour < 1) jour = 1;
             DateTime Date;
             if (!date.HasValue) Date = DateTime.Now;
             else Date = (DateTime)date;
