@@ -28,6 +28,11 @@ namespace TP2MVC
         {
             try
             {
+                Connections cons = (Connections)HttpRuntime.Cache["Connections"];
+                Connection con = (Connection)Session["connection"];
+                con.EndDate = DateTime.Now;
+                cons.Add(con);
+
                 HttpRuntime.Cache["OnLineUsersLastUpdate"] = DateTime.Now;
             }
             catch (Exception)
